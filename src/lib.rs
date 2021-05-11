@@ -17,3 +17,6 @@ const CHUNK_SIZE: usize = 16 * 1024;
 pub fn degrees_to_radians(degrees: f32) -> f32 {
     degrees * PI / 180.0
 }
+
+#[cfg(test)]
+pub mod tests;

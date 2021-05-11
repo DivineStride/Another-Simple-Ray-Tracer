@@ -6,14 +6,15 @@ use std::io::{Read, Result};
 
 use crate::camera::Camera;
 use crate::colors::write_color;
-use crate::controls::world::get_world;
+use crate::hittable_list::HittableList;
 use crate::rays::RayColor;
-use crate::vec3::{Vec3 as Point3, Vec3 as Color, Vec3};
+use crate::vec3::Vec3 as Color;
 
 use crate::CHUNK_SIZE;
 
 pub fn color_loop(
-    aspect_ratio: f32,
+    camera: &Camera,
+    world: &HittableList,
     image_width: u32,
     image_height: u32,
     samples_per_pixel: u32,
@@ -21,12 +22,6 @@ pub fn color_loop(
     stats_tx: Sender<usize>,
     render_tx: Sender<Vec<u8>>,
 ) -> Result<()> {
-    // World
-    let world = get_world();
-
-    // Camera
-    let camera = get_camera(Point3::new(0.0, 0.0, 0.0), aspect_ratio);
-
     // Buffer
     let mut buffer = [0; CHUNK_SIZE];
     let mut file_stream = String::new();
@@ -79,42 +74,4 @@ pub fn color_loop(
     let _ = stats_tx.send(0);
     let _ = render_tx.send(Vec::new());
     Ok(())
-}
-
-fn get_camera(origin: Point3, aspect_ratio: f32) -> Camera {
-    Camera::new(
-        Point3::default(),
-        Point3::new(0.0, 0.0, -1.0),
-        Vec3::new(0.0, 1.0, 0.0),
-        90.0,
-        aspect_ratio,
-    )
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::vec3::Vec3;
-    use crate::R;
-    use std::f32::consts::PI;
-
-    #[test]
-    fn rayon_multithreading_from_iterator() {
-        for _ in 0..5 {
-            let color: Vec3 = (0..5)
-                .into_par_iter()
-                .map(|_index| Vec3::new(0.1, 0.1, 0.1))
-                .sum();
-
-            let against = Vec3::new(0.5, 0.5, 0.5);
-            assert_eq!(against.x, color.x);
-            assert_eq!(against.y, color.y);
-            assert_eq!(against.z, color.z);
-        }
-    }
-
-    #[test]
-    fn constant_r_working() {
-        assert_eq!(R.cos(), (PI / 4.0).cos());
-    }
 }

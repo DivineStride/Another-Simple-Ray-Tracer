@@ -56,8 +56,11 @@ impl Args {
             )
             .get_matches();
 
-        let (default_width, default_height, default_aspect, default_samples, default_depth) =
-            (400, 225, 1.7778, 100, 50);
+        let default_width = 400;
+        let default_height = 225;
+        let default_aspect = 1.777778;
+        let default_samples = 100;
+        let default_depth = 50;
 
         let mut aspect_ratio = matches
             .value_of("aspect_ratio")
@@ -86,19 +89,29 @@ impl Args {
             .unwrap();
         let outfile = matches.value_of("outfile").unwrap_or_default().to_string();
 
-        let aspect_check_1 = aspect_ratio - default_aspect;
-        let aspect_check_2 = aspect_ratio - (image_width / image_height) as f32;
+        let ratio_check = if image_height > image_width {
+            (image_height / image_width) as f32
+        } else {
+            (image_width / image_height) as f32
+        };
 
-        if aspect_check_1 < 0.01 || aspect_check_2 < 0.01 {
-            aspect_ratio = image_width as f32 / image_height as f32;
-
-            if image_width != default_width {
-                image_width = (image_height as f32 * aspect_ratio) as u32;
-            }
-
-            if image_height != default_height {
+        if !((aspect_ratio - (ratio_check) as f32).abs() <= f32::EPSILON) {
+            if image_height > image_width {
+                image_width = (image_height as f32 / aspect_ratio) as u32;
+                eprintln!("{:?}", image_width);
+            } else {
                 image_height = (image_width as f32 / aspect_ratio) as u32;
+                eprintln!("{:?}", image_height);
             }
+
+            if !((aspect_ratio - default_aspect) <= f32::EPSILON) {
+                aspect_ratio = if image_height > image_width {
+                    (image_height / image_width) as f32
+                } else {
+                    (image_width / image_height) as f32
+                }
+            }
+            eprintln!("{:?}", aspect_ratio);
         }
 
         Self {

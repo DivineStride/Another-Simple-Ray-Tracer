@@ -1,6 +1,7 @@
 use crate::hittable::HitRecord;
 use crate::rays::Ray;
 use crate::vec3::{Vec3 as Color, Vec3};
+use rand::random;
 use std::ops::Neg;
 
 #[derive(Debug, Copy, Clone)]
@@ -48,10 +49,12 @@ impl Material {
                 };
 
                 let unit_direction = ray_in.direction.unit_vector();
-                let cos_theta = unit_direction.dot(rec.normal).min(1.0);
+                let cos_theta = unit_direction.neg().dot(rec.normal).min(1.0);
                 let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
-                let direction = if refraction_ratio * sin_theta > 1.0 {
+                let direction = if refraction_ratio * sin_theta > 1.0
+                    || Self::reflectance(cos_theta, refraction_ratio) > random()
+                {
                     Self::reflect(&unit_direction, &rec.normal)
                 } else {
                     Self::refract(&unit_direction, &rec.normal, refraction_ratio)
@@ -66,6 +69,12 @@ impl Material {
 
     pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
         *v - 2.0 * v.dot(*normal) * *normal
+    }
+
+    pub fn reflectance(cosine: f32, refraction_index: f32) -> f32 {
+        let r0 = ((1.0 - refraction_index) / (1.0 + refraction_index)).powf(2.0);
+
+        r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
     }
 
     pub fn refract(uv: &Vec3, normal: &Vec3, etai_over_etat: f32) -> Vec3 {

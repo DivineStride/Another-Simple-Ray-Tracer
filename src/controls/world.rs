@@ -5,69 +5,43 @@ use crate::sphere::Sphere;
 use crate::vec3::{Vec3 as Point3, Vec3 as Color};
 // use crate::R;
 
-pub fn get_world() -> HittableList {
-    // let material_left = Material::Lambertian {
-    //     albedo: Color::new(0.0, 0.0, 1.0)
-    // };
-    // let material_right = Material::Lambertian {
-    //     albedo: Color::new(1.0, 0.0,  0.0)
-    // };
-    //
-    // let list: Vec<Box<dyn Hittable>> = vec![
-    //     Box::new(Sphere {
-    //         center: Point3::new(-R.cos(), 0.0, -1.0),
-    //         radius: R.cos(),
-    //         material: material_left
-    //     }),
-    //     Box::new(Sphere {
-    //         center: Point3::new(R.cos(), 0.0, -1.0),
-    //         radius: R.cos(),
-    //         material: material_right
-    //     })
-    // ];
-
+pub fn get_world(generate_random: bool) -> HittableList {
     let material_ground = Material::Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.0),
+        albedo: Color::new(0.5, 0.5, 0.5),
     };
-    let material_center = Material::Lambertian {
-        albedo: Color::new(0.1, 0.2, 0.5),
-        // refraction_index: 1.5,
-    };
-    let material_left = Material::Dielectric {
+    let material_center = Material::Dielectric {
         refraction_index: 1.5,
     };
+    let material_left = Material::Lambertian {
+        albedo: Color::new(0.4, 0.2, 0.1),
+    };
     let material_right = Material::Metal {
-        albedo: Color::new(0.8, 0.6, 0.2),
-        fuzz: 0.0012,
+        albedo: Color::new(0.7, 0.6, 0.5),
+        fuzz: 0.0,
     };
 
     let list: Vec<Box<dyn Hittable>> = vec![
         Box::new(Sphere {
-            center: Point3::new(0.0, -100.5, -1.0),
-            radius: 100.0,
+            center: Point3::new(0.0, -1000.0, -1.0),
+            radius: 1000.0,
             material: material_ground,
         }),
         Box::new(Sphere {
-            center: Point3::new(0.0, 0.0, -1.0),
-            radius: 0.5,
+            center: Point3::new(0.0, 0.0, 0.0),
+            radius: 1.0,
             material: material_center,
         }),
         Box::new(Sphere {
-            center: Point3::new(-1.0, 0.0, -1.0),
-            radius: 0.5,
+            center: Point3::new(-4.0, 1.0, 0.0),
+            radius: 1.0,
             material: material_left,
         }),
         Box::new(Sphere {
-            center: Point3::new(-1.0, 0.0, -1.0),
-            radius: -0.35,
-            material: material_left,
-        }),
-        Box::new(Sphere {
-            center: Point3::new(1.0, 0.0, -1.0),
-            radius: 0.5,
+            center: Point3::new(4.0, 1.0, 0.0),
+            radius: 1.0,
             material: material_right,
         }),
     ];
 
-    HittableList::new(list)
+    HittableList::new(list, generate_random)
 }
