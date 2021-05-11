@@ -87,7 +87,7 @@ impl Args {
             .unwrap_or(&format!("{}", default_depth)[..])
             .parse::<u32>()
             .unwrap();
-        let outfile = matches.value_of("outfile").unwrap_or_default().to_string();
+        let outfile = matches.value_of("outfile").unwrap_or(&format!("images.ppm")[..]).to_string();
 
         let ratio_check = if image_height > image_width {
             (image_height / image_width) as f32
@@ -101,7 +101,6 @@ impl Args {
                 eprintln!("{:?}", image_width);
             } else {
                 image_height = (image_width as f32 / aspect_ratio) as u32;
-                eprintln!("{:?}", image_height);
             }
 
             if !((aspect_ratio - default_aspect) <= f32::EPSILON) {
@@ -111,7 +110,6 @@ impl Args {
                     (image_width / image_height) as f32
                 }
             }
-            eprintln!("{:?}", aspect_ratio);
         }
 
         Self {
