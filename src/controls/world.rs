@@ -27,7 +27,7 @@ pub fn get_world(generate_random: bool) -> HittableList {
             material: material_ground,
         }),
         Box::new(Sphere {
-            center: Point3::new(0.0, 0.0, 0.0),
+            center: Point3::new(0.0, 1.0, 0.0),
             radius: 1.0,
             material: material_center,
         }),

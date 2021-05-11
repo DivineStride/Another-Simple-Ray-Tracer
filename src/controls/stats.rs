@@ -38,12 +38,18 @@ pub fn stats_loop(stats_rx: Receiver<usize>, expected: usize) -> Result<()> {
 }
 
 fn output_progress(stderr: &mut Stderr, bytes: usize, elapsed: String, rate: f64, expected: usize) {
-    let bytes_styled = style::style(format!("{:0<6}/{} ", bytes, expected)).with(Color::Yellow);
+    let bytes_styled = style::style(format!(
+        "{:0<6}/{} {:>3.0}% ",
+        bytes,
+        expected,
+        (bytes as f32 / expected as f32 * 100.0)
+    ))
+    .with(Color::Yellow);
     let elapsed = style::style(elapsed).with(Color::Green);
     let rate = style::style(format!(
         " [{:.0}b/s ETR: {}]",
         rate,
-        (expected as u64 - bytes as u64 / rate as u64).as_time()
+        ((expected as isize - bytes as isize).abs() as u64 / rate as u64).as_time()
     ))
     .with(Color::Cyan);
     let _ = execute!(
