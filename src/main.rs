@@ -53,7 +53,10 @@ fn main() -> Result<()> {
     });
 
     let stats_handle = thread::spawn(move || {
-        stats::stats_loop(stats_rx, (image_width * image_height * 11 + 24) as usize)
+        stats::stats_loop(
+            stats_rx,
+            ((image_width as f32 * image_height as f32 * 11.3) as usize + 24) as usize,
+        )
     });
     let render_handle = thread::spawn(move || render::render_loop(&outfile, render_rx));
 

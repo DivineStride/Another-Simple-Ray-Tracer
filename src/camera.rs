@@ -63,7 +63,7 @@ impl Camera {
         let mut rng = thread_rng();
         loop {
             let p = Vec3::new(rng.gen_range(-1.0..=1.0), rng.gen_range(-1.0..=1.0), 0.0);
-            if p.length_squared() >= 1.0 {
+            if p.length_squared() > 1.0 {
                 continue;
             } else {
                 return p;

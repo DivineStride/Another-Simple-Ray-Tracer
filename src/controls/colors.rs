@@ -22,6 +22,10 @@ pub fn color_loop(
     stats_tx: Sender<usize>,
     render_tx: Sender<Vec<u8>>,
 ) -> Result<()> {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(11)
+        .build_global()
+        .unwrap();
     // Buffer
     let mut buffer = [0; CHUNK_SIZE];
     let mut file_stream = String::new();
@@ -48,13 +52,14 @@ pub fn color_loop(
 
         let color: Color = (0..samples_per_pixel)
             .into_par_iter()
-            .map(|_sample| {
+            .map(|_samples| {
                 let mut rng = rand::thread_rng();
 
                 let u = (column as f32 + rng.gen::<f32>()) / (image_width - 1) as f32;
                 let v = (row as f32 + rng.gen::<f32>()) / (image_height - 1) as f32;
 
                 let ray = &camera.get_ray(u, v);
+
                 Color::ray_color(ray, &world, max_depth)
             })
             .sum();
