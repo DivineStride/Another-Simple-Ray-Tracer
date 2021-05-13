@@ -9,6 +9,9 @@ pub struct Vec3 {
     pub z: f32,
 }
 
+pub type Point3 = Vec3;
+pub type Color = Vec3;
+
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
@@ -101,8 +104,13 @@ impl Vec3 {
     }
 
     pub fn near_zero(&self) -> bool {
-        let s = 1e-8;
-        (self.x.abs() < s) && (self.y.abs() < s) && (self.z.abs() < s)
+        (self.x.abs() < f32::EPSILON)
+            && (self.y.abs() < f32::EPSILON)
+            && (self.z.abs() < f32::EPSILON)
+    }
+
+    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+        *self - 2.0 * self.dot(*normal) * *normal
     }
 }
 
