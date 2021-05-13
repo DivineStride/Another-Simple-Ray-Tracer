@@ -2,11 +2,11 @@ use crossbeam::channel::{bounded, unbounded};
 use std::io::Result;
 use std::thread;
 
-use ray_tracer::camera::Camera;
 use ray_tracer::controls::args::Args;
-use ray_tracer::controls::world::get_world;
-use ray_tracer::controls::{colors, render, stats};
-use ray_tracer::vec3::{Vec3, Vec3 as Point3};
+use ray_tracer::controls::camera::Camera;
+use ray_tracer::threading::{pixels, render, stats};
+use ray_tracer::vec3::{Vec3, Point3};
+use ray_tracer::controls::world::World;
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -37,10 +37,10 @@ fn main() -> Result<()> {
     );
 
     // World
-    let world = get_world(true);
+    let world = World::get_world(true);
 
     let color_handle = thread::spawn(move || {
-        colors::color_loop(
+        pixels::pixel_loop(
             &camera,
             &world,
             image_width,

@@ -18,8 +18,3 @@ fn rayon_multithreading_from_iterator() {
         assert_eq!(against.z, color.z);
     }
 }
-
-#[test]
-fn constant_r_working() {
-    assert_eq!(R.cos(), (PI / 4.0).cos());
-}
